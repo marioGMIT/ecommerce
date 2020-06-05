@@ -1,6 +1,13 @@
 import React, { Component } from 'react'
 import FormInput from '../form-input/form-input.component'
-import Button from '../button/button.component'
+import CustomButton from '../custom-button/custom-button.component'
+
+import {connect} from 'react-redux'
+import {setCurrentUser} from '../../redux/user/user.actions';
+
+
+import {api} from '../../api/api.url';
+import {URL} from '../../configs/api.configs';
 
 export class SignIn extends Component {
 
@@ -12,11 +19,36 @@ export class SignIn extends Component {
          }
     }
 
-    handleSubmit = event => {
+    handleSubmit = async event => {
 
         event.preventDefault();
 
-        this.setState({email:'', password: ''})
+        const { email, password } = this.state;   
+        
+        const { setCurrentUser } = this.props;
+        const data = {
+        email: email,
+        password: password,
+        };
+        
+        api(URL.users.login, data).then( res => {
+
+            if (res.message === 'Unauthorized') {
+              console.log('Unauthorized');
+            }else{
+              setCurrentUser(res.token);
+      
+            }
+            
+          })
+
+        try {
+                      
+
+            this.setState({ email: '', password: '' });
+          } catch (error) {
+            console.log(error);
+          }
     }
 
     handleChange = event => {
@@ -30,7 +62,7 @@ export class SignIn extends Component {
                 <h1>I already have an account</h1>
                 <span>Sign in with your email and password</span>
 
-                <form onSubmit="{this.handleSubmit}">
+                <form onSubmit={this.handleSubmit}>
                     <FormInput 
                         name='email' 
                         label='Email' 
@@ -48,7 +80,7 @@ export class SignIn extends Component {
                         required
                     />
                     
-                    <Button type='submit' value='Submit Form'>Sign In </Button>
+                    <CustomButton type='submit' value='Submit Form'>Sign In </CustomButton>
                    
 
                 </form>
@@ -57,4 +89,8 @@ export class SignIn extends Component {
     }
 }
 
-export default SignIn
+const mapDispatchToProps = dispatch => ({
+    setCurrentUser: user => dispatch(setCurrentUser(user)),
+})
+
+export default connect(null, mapDispatchToProps)(SignIn)

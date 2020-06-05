@@ -1,8 +1,17 @@
 import React, { Component } from 'react'
-import moduleName from './sign-up.styles.scss'
+import './sign-up.styles.scss'
 
-import Button from '../button/button.component'
+import CustomButton from '../custom-button/custom-button.component'
 import FormInput from '../form-input/form-input.component'
+
+import {api} from '../../api/api.url';
+import {URL} from '../../configs/api.configs';
+
+import {setCurrentUser} from '../../redux/user/user.actions';
+
+import {connect} from 'react-redux'
+
+
 
 export class SignUp extends Component {
     constructor(props) {
@@ -10,7 +19,7 @@ export class SignUp extends Component {
         this.state = {
             email:'',
             password:'',
-            displayName:'',
+            name:'',
             confirmPassword:''
         }
         
@@ -20,22 +29,47 @@ export class SignUp extends Component {
 
         event.preventDefault();
 
-        const{ displayName,email,password,confirmPassword } = this.state;
+        const { setCurrentUser } = this.props;
 
-        if (password != confirmPassword) {
-            alert("Password dont match");
+        const{ name,email,password,confirmPassword } = this.state;
+
+        if (password !== confirmPassword) {
+            alert("Password doesn't match");
             return;
         }
 
         try {
-            // CHECK IF THE USER EXIST
+            // CHECK IF THE USER EXIST            
+        
+            // const { setCurrentUser } = this.props;
+            const data = {
+            email: email,
+            password: password,
+            password_confirmation: confirmPassword,
+            name: name
+            };
+            
+            api(URL.users.register, data).then( res => {
 
+                if (res.message === 'CREATED') {
+
+                    api(URL.users.login, data).then( res => {
+
+                        if (res.message !== 'Unauthorized') {
+                            setCurrentUser(res.token);
+                        }
+                        
+                    })
+                
+                }
+                
+            })
             // ADD USER
         } catch (error) {
             
         }
 
-        this.setState({email:'', password:'', displayName: '', confirmPassword:''});
+        this.setState({email:'', password:'', name: '', confirmPassword:''});
     }
 
     handleChange = async event => {
@@ -44,17 +78,17 @@ export class SignUp extends Component {
     }
     render() {
 
-        const{ displayName,email,password,confirmPassword } = this.state;
+        const{ name,email,password,confirmPassword } = this.state;
         return (
             <div className='sign-up'>
                 <h2 className="title">I don not have a account</h2>
                 <span>Sign up with your email and password</span>
                 <form onSubmit={this.handleSubmit} className="sign-up-form">
                     <FormInput 
-                        name='displayName' 
-                        label={displayName} 
+                        name='name' 
+                        label='Name' 
                         handleChange={this.handleChange} 
-                        value={this.state.email} 
+                        value={name} 
                         required
                     />
                     <FormInput 
@@ -75,7 +109,7 @@ export class SignUp extends Component {
 
                     <FormInput 
                         name='confirmPassword' 
-                        label='Password' 
+                        label='Confirm Password' 
                         handleChange={this.handleChange} 
                         type='password' 
                         value={confirmPassword} 
@@ -83,7 +117,7 @@ export class SignUp extends Component {
                     />
                     
 
-                    <Button type='submit' value='Submit Form'>Sign Up </Button>
+                    <CustomButton type='submit' value='Submit Form'>Sign Up </CustomButton>
                 </form>
                 
             </div>
@@ -91,4 +125,8 @@ export class SignUp extends Component {
     }
 }
 
-export default SignUp
+const mapDispatchToProps = dispatch => ({
+    setCurrentUser: user => dispatch(setCurrentUser(user))
+})
+
+export default connect(null, mapDispatchToProps)(SignUp)
