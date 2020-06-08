@@ -19,7 +19,7 @@ import Cart from '../cart-dropdown/cart-dropdown.component';
 
 
 
-const Header = ({ currentUser, hidden, setCurrentUser }) => (
+export const Header = ({ currentUser, hidden, setCurrentUser }) => (
 
   
     <div className='header'>
