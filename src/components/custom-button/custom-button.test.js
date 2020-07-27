@@ -7,7 +7,7 @@ describe('CustomButton component', () => {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = shallow(<CustomButton />);
+    wrapper = shallow(<CustomButton name="Dealer" label={3}/>);
   });
 
   it('should render CustomButton component', () => {

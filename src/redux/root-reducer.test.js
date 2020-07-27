@@ -44,12 +44,7 @@ describe('Cart Reducer', () => {
         cartItems: []
       };
     
-    const NEW_ITEM = {
-        id: 1,
-        name: 'Brown Brim',
-        imageUrl: 'https://i.ibb.co/ZYW3VTp/brown-brim.png',
-        price: 25,
-    }
+    
 
     it('should return initial state ', () => {
         expect( cartReducer(INITIAL_STATE_CART,{}) ).toEqual({hidden: true, cartItems: []}, {})
