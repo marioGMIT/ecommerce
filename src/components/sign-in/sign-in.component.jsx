@@ -29,8 +29,9 @@ export class SignIn extends Component {
         const data = {
         email: email,
         password: password,
-        };
-        
+        };       
+
+         
         api(URL.users.login, data).then( res => {
 
             if (res.message === 'Unauthorized') {
